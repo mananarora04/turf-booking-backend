@@ -111,4 +111,41 @@ router.post('/savebooking',async(req,res)=>{
     }
 })
 
+// Cancel a booking (set status back to 'A' and remove cstmrid)
+router.post('/cancelbooking', async (req, res) => {
+    try {
+        const { turfname, schdate, time, userid } = req.body;
+        // Find user profile to get cstmrid
+        const user = await UserProfile.findOne({ userid });
+        if (!user) {
+            return res.status(400).json({ Status: 'Failed', Message: 'User not found' });
+        }
+        // Find turf info to get turfid
+        const turfinfo = await InfoTurf.findOne({ turfname });
+        if (!turfinfo) {
+            return res.status(400).json({ Status: 'Failed', Message: 'Turf not found' });
+        }
+        // Find scheduled turf for the date and turf
+        const schTurf = await SchTurf.findOne({ turfid: turfinfo._id.toString(), schdate });
+        if (!schTurf) {
+            return res.status(400).json({ Status: 'Failed', Message: 'Booking not found' });
+        }
+        // Find the timing slot
+        const slot = schTurf.turftiming.find(t => t.time === time && t.cstmrid === user._id.toString());
+        if (!slot) {
+            return res.status(400).json({ Status: 'Failed', Message: 'Slot not found or not booked by user' });
+        }
+        // Only allow cancel if status is 'B' (Booked)
+        if (slot.status !== 'B') {
+            return res.status(400).json({ Status: 'Failed', Message: 'Slot is not booked' });
+        }
+        slot.status = 'A';
+        slot.cstmrid = undefined;
+        await schTurf.save();
+        return res.status(200).json({ Status: 'Success', Message: 'Booking cancelled successfully' });
+    } catch (error) {
+        return res.status(500).json({ Status: 'Failed', Message: 'Error cancelling booking' });
+    }
+});
+
 module.exports = router;

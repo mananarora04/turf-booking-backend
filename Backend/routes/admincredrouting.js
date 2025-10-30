@@ -55,10 +55,11 @@ router.post('/login',async(req,res)=>{
         }
         res.status(200).json(resp);
     }
-    catch(error){
+    catch(error) {
+        console.error("Login error:", error);
         const resp={"Status":"Failed","Message":"Error in login"};
         res.status(500).json(resp);
-    }
+}
 })
 
 module.exports = router;

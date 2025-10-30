@@ -7,6 +7,27 @@ class UserHistoryDtls extends React.Component {
         };   
     }
 
+    // Add this method to handle booking deletion
+    async handleDeleteBooking(obj) {
+        // Call backend API to cancel booking
+        const resp = await fetch('/bookturf/cancelbooking', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                turfname: obj.turfname,
+                schdate: obj.schdate,
+                time: obj.time,
+                userid: this.props.cred.userid
+            })
+        }).then(res => res.json());
+        if (resp.Status === 'Success') {
+            // Remove the booking from the list (or refetch)
+            if (this.props.onBookingDeleted) this.props.onBookingDeleted(obj);
+        } else {
+            if (this.props.setalertboxcontent) this.props.setalertboxcontent({ title: 'Delete Booking', body: resp.Message });
+        }
+    }
+
     render() {
         return (
             <>
@@ -24,6 +45,7 @@ class UserHistoryDtls extends React.Component {
                                 <td>Time</td>
                                 <td>Price</td>
                                 <td>Status</td>
+                                <td>Delete</td>
                             </tr>
                         </thead>  
                         <tbody>
@@ -34,6 +56,9 @@ class UserHistoryDtls extends React.Component {
                                         <td>{obj.time}</td>
                                         <td>{obj.price}</td>
                                         <td>{obj.status}</td>
+                                        <td>
+                                            <button className="btn btn-danger btn-sm" onClick={() => this.handleDeleteBooking(obj)} disabled={obj.status!=="Scheduled"}>Delete</button>
+                                        </td>
                                     </tr>
                                 ))} 
                         </tbody>

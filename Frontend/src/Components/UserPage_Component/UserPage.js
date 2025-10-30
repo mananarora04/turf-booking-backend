@@ -209,7 +209,7 @@ class UserPage extends React.Component {
                 {this.props.view==="Homepage" && <UserPage_HomeView/>}
                 {this.props.view==="PROFILE" && <UserProfile cred={this.props.cred} profile={this.state.profile} saveeditbutton={this.state.saveeditbutton} setalertboxcontent={this.setalertboxcontent} usernamechangeprofile={this.usernamechangeprofile} phonenochangeprofile={this.phonenochangeprofile} emailidchangeprofile={this.emailidchangeprofile} setsaveeditbutton={this.setsaveeditbutton}/>}
                 {this.props.view==="BOOK SLOT" && <BookSlotPage selectslot={this.selectslot} bookingdate={this.state.bookingdate} datechangefunc={this.datechangefunc} fetchturfs={this.fetchturfs} fetchdtlsturf={this.state.fetchdtlsturf} cred={this.props.cred} setalertboxcontent={this.setalertboxcontent}/>}    
-                {this.props.view==="USER HISTORY" && <UserHistoryDtls userhistorydtls={this.state.userhistorydtls}/>}    
+                {this.props.view==="USER HISTORY" && <UserHistoryDtls userhistorydtls={this.state.userhistorydtls} cred={this.props.cred} setalertboxcontent={this.setalertboxcontent} onBookingDeleted={this.userhistorydtlschangefunc}/>}    
                 <h1 className="clear1">&nbsp;</h1>
             </div>
             );   
